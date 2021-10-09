@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,6 +21,7 @@ import docesgraces.server.repository.UsuarioRepository;
 import docesgraces.server.service.AuthenticationService;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
@@ -29,10 +31,10 @@ public class UsuarioController {
 	@Autowired
 	private AuthenticationService authenticationService;
 
-//	@GetMapping
-//	public List<Usuario> listar() {
-//		return usuarioRepository.findAll();
-//	}
+	@GetMapping
+	public List<Usuario> listar() {
+		return usuarioRepository.findAll();
+	}
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
