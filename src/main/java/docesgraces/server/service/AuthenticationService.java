@@ -1,7 +1,5 @@
 package docesgraces.server.service;
 
-import java.util.Date;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +9,8 @@ import docesgraces.server.exception.InvalidTokenException;
 import docesgraces.server.model.Usuario;
 import docesgraces.server.repository.UsuarioRepository;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 
 @Service
 public class AuthenticationService {
@@ -30,7 +30,7 @@ public class AuthenticationService {
 			usuarioDetalhes.setToken(token);
 			return usuarioDetalhes;
 		} else {
-			throw new InvalidLoginException();
+			throw new InvalidLoginException("E-mail ou senha inválido");
 		}
 	}
 
@@ -41,19 +41,17 @@ public class AuthenticationService {
 
 			System.out.println(claims.getIssuer());
 			System.out.println(claims.getIssuedAt());
-			// Verifica se o token está expirado
-			if (claims.getExpiration().before(new Date(System.currentTimeMillis())))
-				throw new ExpiredTokenException();
 			System.out.println(claims.getExpiration());
 			return true;
-		} catch (ExpiredTokenException et) {
-			et.printStackTrace();
-			throw et;
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new InvalidTokenException();
+		} catch (ExpiredJwtException et) {
+//			et.printStackTrace();
+			System.out.println(et.getMessage());
+			throw new ExpiredTokenException("Token expirado");
+		} catch (MalformedJwtException e) {
+//			e.printStackTrace();
+			System.out.println(e.getMessage());
+			throw new InvalidTokenException("Token inválido");
 		}
-
 	}
 
 }

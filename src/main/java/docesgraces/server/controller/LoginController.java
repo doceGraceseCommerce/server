@@ -1,5 +1,8 @@
 package docesgraces.server.controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,9 +25,15 @@ public class LoginController {
 	private AuthenticationService authenticationService;
 
 	@PostMapping
-	public ResponseEntity<JwtResponse> autenticar(@RequestBody Usuario usuario) {
-		Usuario user = authenticationService.autenticar(usuario);
-		return new ResponseEntity<JwtResponse>(JwtResponse.toDTO(user, "Bearer "), HttpStatus.CREATED);
+	public ResponseEntity<?> autenticar(@RequestBody Usuario usuario) {
+		try {
+			Usuario user = authenticationService.autenticar(usuario);
+			return new ResponseEntity<JwtResponse>(JwtResponse.toDTO(user, "Bearer "), HttpStatus.CREATED);
+		} catch (Exception e) {
+			Map<String, String> resp = new HashMap<>();
+			resp.put("message", e.getLocalizedMessage());
+			return new ResponseEntity<Map<String, String>>(resp, HttpStatus.UNAUTHORIZED);
+		}
 
 	}
 }
