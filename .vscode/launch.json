@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-ServerApplication<server>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "mainClass": "docesgraces.server.ServerApplication",
+      "projectName": "server",
+      "args": ""
+    }
+  ]
+}

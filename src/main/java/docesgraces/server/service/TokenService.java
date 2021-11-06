@@ -28,6 +28,7 @@ public class TokenService {
                 .setIssuer("API")
                 .setIssuedAt(hoje)
                 .setExpiration(dataExpiracao)
+                .claim("usuarioTipo", usuario.getUsuarioTipo())
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
     }

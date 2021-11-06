@@ -34,15 +34,14 @@ public class AuthenticationService {
 		}
 	}
 
-	public boolean validar(String token) {
+	public String validar(String token) {
 		try {
 			String tokenTratado = token.replace("Bearer ", "");
 			Claims claims = tokenService.decodeToken(tokenTratado);
-
 			System.out.println(claims.getIssuer());
 			System.out.println(claims.getIssuedAt());
 			System.out.println(claims.getExpiration());
-			return true;
+			return claims.getSubject();
 		} catch (ExpiredJwtException et) {
 //			et.printStackTrace();
 			System.out.println(et.getMessage());

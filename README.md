@@ -41,6 +41,17 @@ Essa é a aplicação que registra, atualiza ou busca requisições no banco env
 
 
 <ul>
+<li><b>Configure as variávies</b></li>
+<ul>
+<li>Para que a aplicação funcione corretamente, é necessário configurar algumas variáveis como de conexão com banco e do serviço de email no arquivo <b>./src/main/resources/application.properties</b> e também possuir o arquivo <b>./src/main/resources/firebase.json</b> com as credenciais do serviço Firebase.
+<br/>
+
+</li>
+</ul>
+</ul>
+
+
+<ul>
 <li><b>Construa a aplicação</b></li>
 <ul>
 <li>Abra o terminal na raiz desse repositório e execute o comando:
@@ -53,6 +64,7 @@ $ mvn package
 </li>
 </ul>
 </ul>
+
 
 <ul>
 <li><b>Execute a aplicação</b></li>
