@@ -14,17 +14,34 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import docesgraces.server.exception.MailerException;
+import docesgraces.server.listener.EventListener;
+import lombok.Getter;
+import lombok.Setter;
 
 @Service
-public class MailerService {
+public class MailerService implements EventListener {
 
+	@Getter
+	@Setter
+	public String email;
+	
+	@Getter
+	@Setter
+	public String assunto;
+	
+	@Getter
+	@Setter
+	public String mensagemString;
+
+	
 	@Value("${spring.mail.username}")
 	private String from;
 
 	@Value("${spring.mail.password}")
 	private String password;
 
-	public String enviarEmail(String email, String assunto, String mensagemString) {
+	@Override
+	public void enviarMensagem(String eventType) {
 
 		String to = email;
 
@@ -60,7 +77,8 @@ public class MailerService {
 			System.out.println("sending...");
 			Transport.send(message);
 			System.out.println("Sent message successfully....");
-			return "Mensagem enviada com sucesso!";
+//			return "Mensagem enviada com sucesso!";
+			System.out.println("O evento " + eventType + " foi acionado!");
 
 		} catch (MessagingException mex) {
 			mex.printStackTrace();

@@ -22,6 +22,8 @@ import docesgraces.server.model.Usuario;
 import docesgraces.server.repository.PedidoRepository;
 import docesgraces.server.repository.UsuarioRepository;
 import docesgraces.server.service.AuthenticationService;
+import docesgraces.server.service.MailerService;
+import docesgraces.server.service.TelegramBotService;
 
 @RestController
 @CrossOrigin
@@ -36,6 +38,12 @@ public class PedidoController {
 
 	@Autowired
 	private AuthenticationService authenticationService;
+
+	@Autowired
+	private TelegramBotService telegramBotService;
+
+	@Autowired
+	private MailerService mailerService;
 
 	@GetMapping
 	public ResponseEntity<?> listar(@RequestHeader String Authorization) {
@@ -58,9 +66,18 @@ public class PedidoController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	public ResponseEntity<?> adicionar(@RequestHeader String Authorization, @RequestBody Pedido pedido) {
+
 		try {
 			String usuarioId = authenticationService.validar(Authorization);
 			Usuario usuario = usuarioRepository.findById(Long.parseLong(usuarioId)).get();
+
+//			mailerService.setEmail(usuario.getEmail());
+			mailerService.setAssunto("Pedido Recebido");
+			mailerService.setMensagemString("Novo pedido OK!");
+			telegramBotService.setMensagem("Novo pedido OK!");
+			pedido.events.subscribe("telegram", telegramBotService);
+			pedido.events.subscribe("email", mailerService);
+
 			pedido.setUsuario(usuario);
 			pedidoRepository.save(pedido);
 			return new ResponseEntity<MessageResponse>(MessageResponse.toDTO("Pedido criado com sucesso!"),

@@ -1,5 +1,6 @@
 package docesgraces.server.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,17 +13,24 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PostPersist;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import docesgraces.server.listener.EventManager;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
 @Table(name = "pedido")
 @Getter
 @Setter
-@NoArgsConstructor
+@JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+//@NoArgsConstructor
+//@EntityListeners(ProdutoListener.class)
 public class Pedido {
 
 	@Id
@@ -56,5 +64,27 @@ public class Pedido {
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "pedido_id")
 	private List<ItemPedido> itens = new ArrayList<>();
+
+	@Transient
+	@JsonIgnore
+	public EventManager events;
+
+	public Pedido() {
+		this.events = new EventManager("telegram", "email");
+	}
+
+	@PostPersist
+	public void afterPresist() {
+		try {
+			events.notify("telegram");
+			events.notify("email");
+//			TelegramBotService telegram = new TelegramBotService();
+//			telegram.setLog("teste");
+//			telegram.update("save", "teste");
+			System.out.println("salvou");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 }

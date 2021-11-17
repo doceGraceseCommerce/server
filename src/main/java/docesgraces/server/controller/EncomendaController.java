@@ -18,7 +18,7 @@ import docesgraces.server.service.MailerService;
 @CrossOrigin
 @RequestMapping("/encomendas")
 public class EncomendaController {
-	
+
 	@Value("${spring.mail.username}")
 	private String email;
 
@@ -29,20 +29,20 @@ public class EncomendaController {
 	public ResponseEntity<?> encomendar(@RequestBody MailerRequest mailerRequest) {
 		try {
 			String mensagemString = String.format(
-					"<p>Enviada por: %s</p>\n" + 
-					"<p>Email: %s</p>\n" + 
-					"<p>Telefone: %s</p>\n" + 
-					"<p>Mensagem:</p>\n" + 
-					"<p>%s</p>",
+					"<p>Enviada por: %s</p>\n" + "<p>Email: %s</p>\n" + "<p>Telefone: %s</p>\n" + "<p>Mensagem:</p>\n"
+							+ "<p>%s</p>",
 					mailerRequest.getNome(), mailerRequest.getEmail(), mailerRequest.getTelefone(),
 					mailerRequest.getMensagem());
-			String resposta = mailerService.enviarEmail(email, mailerRequest.getAssunto(),
-					mensagemString);
-			return new ResponseEntity<MessageResponse>(MessageResponse.toDTO(resposta), HttpStatus.OK);
+			mailerService.setEmail(email);
+			mailerService.setAssunto(mailerRequest.getAssunto());
+			mailerService.setMensagemString(mensagemString);
+			mailerService.enviarMensagem("email");
+			return new ResponseEntity<MessageResponse>(MessageResponse.toDTO("Mensagem enviada com sucesso!"),
+					HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<MessageResponse>(MessageResponse.toDTO(e.getLocalizedMessage()),
 					HttpStatus.BAD_REQUEST);
-
 		}
 	}
+
 }
