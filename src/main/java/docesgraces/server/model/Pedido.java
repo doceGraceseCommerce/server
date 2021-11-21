@@ -1,21 +1,26 @@
 package docesgraces.server.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PostPersist;
+import javax.persistence.PostUpdate;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -37,31 +42,41 @@ public class Pedido {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 
-	@OneToOne
+	@Column
+	private String pedidoNum;
+
+	@ManyToOne
 	private Usuario usuario;
 
 	@Column(nullable = false)
 	private double valorTotal;
 
 	@Column(nullable = false)
-	private int quantidadeTotal;
-
-	@Column(nullable = false, length = 10)
 	private String dataPedido;
 
 	@Column
 	private double taxaEntrega;
 
-	@Column(length = 10)
+	@Column
 	private String dataEnvio;
 
-	@Column(length = 10)
+	@Column
 	private String dataEntrega;
 
+	@Column
+	private String pagamentoId;
+
+	@Column
+	private String statusPagamento;
+
+	@Column
+	private String statusPedido;
+
 	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "endereco_id")
 	private EnderecoPedido endereco;
 
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "pedido_id")
 	private List<ItemPedido> itens = new ArrayList<>();
 
@@ -73,7 +88,7 @@ public class Pedido {
 		this.events = new EventManager("telegram", "email");
 	}
 
-	@PostPersist
+	@PostUpdate
 	public void afterPresist() {
 		try {
 			events.notify("telegram");

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,6 +64,29 @@ public class ProdutoController {
 			}
 		} catch (Exception e) {
 			System.out.println(e.getLocalizedMessage());
+			return new ResponseEntity<MessageResponse>(MessageResponse.toDTO(e.getLocalizedMessage()),
+					HttpStatus.BAD_REQUEST);
+		}
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<?> alterarProduto(@PathVariable(value = "id") long id, @RequestHeader String Authorization,
+			@RequestBody Produto produtoDetalhes) {
+		try {
+			String usuarioId = authenticationService.validar(Authorization);
+			Usuario usuario = usuarioRepository.findById(Long.parseLong(usuarioId)).get();
+			if (usuario.getUsuarioTipo() == 1) {
+//				Produto produto = produtoRepository.findById(id).get();
+				
+				produtoRepository.save(produtoDetalhes);
+				return new ResponseEntity<MessageResponse>(MessageResponse.toDTO("Produto alterado com sucesso!"),
+						HttpStatus.CREATED);
+			} else {
+				return new ResponseEntity<MessageResponse>(
+						MessageResponse.toDTO("Usuário não possui autorização para alterar produtos!"),
+						HttpStatus.UNAUTHORIZED);
+			}
+		} catch (Exception e) {
 			return new ResponseEntity<MessageResponse>(MessageResponse.toDTO(e.getLocalizedMessage()),
 					HttpStatus.BAD_REQUEST);
 		}

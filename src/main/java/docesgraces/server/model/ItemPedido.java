@@ -24,12 +24,15 @@ public class ItemPedido {
 	private Long id;
 
 	@Column(nullable = false)
+	private String nome;
+
+	@Column(nullable = false)
 	private int quantidade;
 
 	@Column(nullable = false)
 	private double preco;
 
-	@OneToOne
-	private Produto produto;
+	@Column(nullable = false)
+	private String imagem;
 
 }
