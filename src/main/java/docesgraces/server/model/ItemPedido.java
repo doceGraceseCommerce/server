@@ -24,6 +24,9 @@ public class ItemPedido {
 	private Long id;
 
 	@Column(nullable = false)
+	private Long produtoId;
+
+	@Column(nullable = false)
 	private String nome;
 
 	@Column(nullable = false)

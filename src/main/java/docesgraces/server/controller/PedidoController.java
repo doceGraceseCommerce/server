@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,9 +26,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import docesgraces.server.dto.MessageResponse;
+import docesgraces.server.model.ItemPedido;
 import docesgraces.server.model.Pedido;
+import docesgraces.server.model.Produto;
 import docesgraces.server.model.Usuario;
 import docesgraces.server.repository.PedidoRepository;
+import docesgraces.server.repository.ProdutoRepository;
 import docesgraces.server.repository.UsuarioRepository;
 import docesgraces.server.service.AuthenticationService;
 import docesgraces.server.service.MailerService;
@@ -43,6 +47,9 @@ public class PedidoController {
 
 	@Autowired
 	private UsuarioRepository usuarioRepository;
+
+	@Autowired
+	private ProdutoRepository produtoRepository;
 
 	@Autowired
 	private AuthenticationService authenticationService;
@@ -175,6 +182,18 @@ public class PedidoController {
 				pedido.setStatusPedido("Pagamento Aprovado");
 				pedido.setStatusPagamento(pedidoDetalhes.getStatusPagamento());
 //				pedido.setPagamentoId(pedidoDetalhes.getPagamentoId());
+
+				List<ItemPedido> itens = pedido.getItens();
+				for (ItemPedido itemPedido : itens) {
+					Long produtoId = itemPedido.getProdutoId();
+					Produto produto = produtoRepository.findById(produtoId).get();
+					int res = produto.getQuantidade() - itemPedido.getQuantidade();
+					if (res < 0) {
+						res = 0;
+					}
+					System.out.println("quantidade: " + res);
+					produto.setQuantidade(res);
+				}
 
 				mailerService.setEmail(pedido.getUsuario().getEmail());
 				mailerService.setAssunto("Pedido no. " + pedido.getPedidoNum() + " - " + "Pagamento Aprovado");

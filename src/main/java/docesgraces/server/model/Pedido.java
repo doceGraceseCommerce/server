@@ -72,7 +72,7 @@ public class Pedido {
 	@Column
 	private String statusPedido;
 
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
 	@JoinColumn(name = "endereco_id")
 	private EnderecoPedido endereco;
 

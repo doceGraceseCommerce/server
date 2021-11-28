@@ -43,7 +43,4 @@ public class Produto {
 	@Column(nullable = false)
 	private boolean produtoAtivo;
 
-	@Column(nullable = false)
-	private boolean produtoEncerrado;
-
 }
